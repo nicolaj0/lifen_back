@@ -4,6 +4,7 @@ import jsonpickle
 
 from level1.worker import Worker
 
+costs = {'interne': 126, 'medic': 270}
 with open('data.json') as json_file:
     data = json.load(json_file)
 
@@ -16,9 +17,12 @@ workersCost = []
 
 for k, g in groupby(shifts, key=lambda x: x['user_id']):
     worker = filter(lambda d: d['id'] == k, workers)
-    workerShiftPrice = (list(worker)[0]['price_per_shift'])
-    total = workerShiftPrice * (len(list(g)))
-    workersCost.append(Worker(k, total))
 
+    workerStatus = (list(worker)[0]['status'])
+    workerStatusPrice = costs[workerStatus]
+
+    total = workerStatusPrice * (len(list(g)))
+    workersCost.append(Worker(k, total))
+print(workersCost)
 with open('output.json', 'w', encoding='utf-8') as outfile:
     json.dump({'workers': jsonpickle.encode(workersCost, unpicklable=False)}, outfile, ensure_ascii=False, indent=2)
